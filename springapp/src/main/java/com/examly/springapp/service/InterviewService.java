@@ -9,9 +9,9 @@ import com.examly.springapp.repository.InterviewRepository;
 @service
 public class InterviewService {
     @Autowired
-    InterviewRepository repo;
+    private InterviewRepository repo;
 
-    public Interview add(Interview interview){
+    public Interview addInterview(Interview interview){
         return repo.save(interview);
     }
 
