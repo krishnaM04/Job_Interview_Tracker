@@ -1,68 +1,86 @@
 package com.examly.springapp.model;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GeneratedType;
-import jakarta.persistence.ID;
+
+import jakarta.persistence.*;
 
 @Entity
-public class Interview{
-    @ID
-    @GeneratedValue(strategy = GeneratedType.IDENTITY)
-    private long id;
+public class Interview {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String candidateName;
-    private String company;
-    private String role;
+    private String companyName;
+    private String jobTitle;
     private String interviewDate;
+    private String interviewType;
     private String status;
+    private String feedback;
 
-    public Interview(){
-
-    }
-    
-    public Interview(Long id,String candidateName, String company, String role,String interviewDate,String status){
-        this.id=id;
-        this.candidateName=candidateName;
-        this.company = company;
-        this.role=role;
-        this.interviewDate=interviewDate;
-        this.status=status;
+    public Interview() {
     }
 
-    public Long getid(){
+    public Long getId() {
         return id;
     }
-    public void setId(Long id){
-        this.id=id;
+
+    public void setId(Long id) {
+        this.id = id;
     }
-    public String getCandidateName(){
+
+    public String getCandidateName() {
         return candidateName;
     }
 
-    public void setCandidateName(String candidateName){
-        this.candidateName=candidateName;
+    public void setCandidateName(String candidateName) {
+        this.candidateName = candidateName;
     }
-    public String getCompany(){
-        return company;
+
+    public String getCompanyName() {
+        return companyName;
     }
-    public void setCompany(String company){
-        this.company=company;
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
-    public String getRole(){
-        return role;
+
+    public String getJobTitle() {
+        return jobTitle;
     }
-    public void setRole(String role){
-        this.role=role;
+
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
     }
-    public String getInterviewDate(){
+
+    public String getInterviewDate() {
         return interviewDate;
     }
-    public void setInterviewDate(String interviewDate){
-        this.interviewDate=interviewDate;
+
+    public void setInterviewDate(String interviewDate) {
+        this.interviewDate = interviewDate;
     }
-    public String getStatus(){
+
+    public String getInterviewType() {
+        return interviewType;
+    }
+
+    public void setInterviewType(String interviewType) {
+        this.interviewType = interviewType;
+    }
+
+    public String getStatus() {
         return status;
     }
-    public void setStatus(String status){
-        this.status=status;
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
     }
 }

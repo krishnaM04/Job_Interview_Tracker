@@ -1,21 +1,24 @@
 package com.examly.springapp.service;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.examly.springapp.model.Interview;
 import com.examly.springapp.repository.InterviewRepository;
 
-@service
+@Service
 public class InterviewService {
-    @Autowired
-    private InterviewRepository repo;
 
-    public Interview addInterview(Interview interview){
-        return repo.save(interview);
+    @Autowired
+    private InterviewRepository repository;
+
+    public Interview addInterview(Interview interview) {
+        return repository.save(interview);
     }
 
-    public List<Interview>getAllInterview(){
-        return repo.findAll();
+    public List<Interview> getAllInterviews() {
+        return repository.findAll();
     }
 }
