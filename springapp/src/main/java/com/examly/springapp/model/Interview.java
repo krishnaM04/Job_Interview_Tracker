@@ -1,6 +1,9 @@
 package com.examly.springapp.model;
 
-import jakarta.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Interview {
@@ -18,6 +21,24 @@ public class Interview {
     private String feedback;
 
     public Interview() {
+    }
+
+    public Interview(Long id,
+                 String candidateName,
+                 String companyName,
+                 String jobTitle,
+                 String interviewDate,
+                 String interviewType,
+                 String status,
+                 String feedback){
+        this.id = id;
+        this.candidateName = candidateName;
+        this.companyName = companyName;
+        this.jobTitle = jobTitle;
+        this.interviewDate = interviewDate;
+        this.interviewType = interviewType;
+        this.status = status;
+        this.feedback = feedback;
     }
 
     public Long getId() {
