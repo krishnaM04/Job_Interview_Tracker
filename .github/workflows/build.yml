@@ -1,5 +1,6 @@
 name: Build
-'on':
+
+on:
   push:
     branches:
       - '*'
@@ -8,44 +9,72 @@ name: Build
       - opened
       - synchronize
       - reopened
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: '17'
+          distribution: 'temurin'
+
       - name: Move Pom.xml to Root
         run: mv .github/workflows/pom.xml ./pom.xml
+
       - name: Build and analyze
         env:
-          GITHUB_TOKEN: >-
-            88892812-32c4-491b-9073-279bf2e70b06-51679ffc-6ed1-4810-abee-40695bfb4263
-          SONAR_TOKEN: sqa_bca47d55147cb1b256a213a17c135dfe863be411
-        run: >-
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-          -Dsonar.projectKey=iamneo-production_88892812-32c4-491b-9073-279bf2e70b06-51679ffc-6ed1-4810-abee-40695bfb4263
-          -Dsonar.login=sqa_bca47d55147cb1b256a213a17c135dfe863be411
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn -B verify \
+            org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=iamneo-production_88892812-32c4-491b-9073-279bf2e70b06-51679ffc-6ed1-4810-abee-40695bfb4263 \
+            -Dsonar.login="$SONAR_TOKEN"
+
       - name: Trigger API
         if: always()
         env:
-          API_URL: '${{ secrets.API_URL }}'
-          API_SECRET: '${{ secrets.API_SECRET }}'
-        run: >
-          REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d '/' -f 2)
+          API_URL: ${{ secrets.API_URL }}
+          API_SECRET: ${{ secrets.API_SECRET }}
+        run: |
+          if [ -z "$API_URL" ]; then
+            echo "API_URL secret is not configured."
+            echo "Skipping Trigger API."
+            exit 0
+          fi
 
+          REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d '/' -f 2)
           ORG_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d '/' -f 1)
 
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          if [[ "${GITHUB_REF}" == refs/heads/* ]]; then
+            BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          else
+            BRANCH_NAME="${GITHUB_HEAD_REF}"
+          fi
 
-          API_PAYLOAD="{ \"repo_id\": \"$REPO_NAME\", \"branch_name\":
-          \"$BRANCH_NAME\", \"api_secret\": \"$API_SECRET\", \"org_name\":
-          \"$ORG_NAME\" }"
+          API_PAYLOAD=$(cat <<EOF
+          {
+            "repo_id": "$REPO_NAME",
+            "branch_name": "$BRANCH_NAME",
+            "api_secret": "$API_SECRET",
+            "org_name": "$ORG_NAME"
+          }
+          EOF
+          )
 
-          curl -X POST -H "Content-Type: application/json" -d "$API_PAYLOAD"
-          $API_URL
+          echo "Triggering API..."
+
+          curl --fail-with-body -X POST "$API_URL" \
+            -H "Content-Type: application/json" \
+            -d "$API_PAYLOAD"
+
+          echo "API triggered successfully."
