@@ -1,0 +1,12 @@
+# React
+reactapp/node_modules/
+reactapp/build/
+
+# Spring Boot
+springapp/target/
+
+# IDE
+.vscode/
+
+# Environment files
+.env

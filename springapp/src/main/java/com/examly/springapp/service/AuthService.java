@@ -27,22 +27,27 @@ public class AuthService {
     public Object register(Object userData) {
         String username = null;
         String password = null;
-        String role = "USER";
+        String role = "STANDARD_CANDIDATE";
 
         if (userData instanceof RegisterRequest) {
             RegisterRequest req = (RegisterRequest) userData;
             username = req.getUsername();
             password = req.getPassword();
-            role = req.getRole() != null ? req.getRole() : "USER";
+            role = req.getRole() != null ? req.getRole() : "STANDARD_CANDIDATE";
         } else if (userData instanceof Map) {
             Map<?, ?> data = (Map<?, ?>) userData;
             username = (String) data.get("username");
             password = (String) data.get("password");
-            role = data.get("role") != null ? (String) data.get("role") : "USER";
+            role = data.get("role") != null ? (String) data.get("role") : "STANDARD_CANDIDATE";
         }
 
         if (username == null || password == null) {
             return Map.of("error", "username and password are required");
+        }
+
+        // Reject duplicate usernames
+        if (userRepository.findByUsername(username).isPresent()) {
+            return Map.of("error", "Username already exists. Please choose a different username.");
         }
 
         User user = new User();
